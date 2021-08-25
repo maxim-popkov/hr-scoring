@@ -3,6 +3,24 @@ hr-scoring
 
 HR Scoring for fast filter Resumes
 
+# How to use
+### One Command
+```code
+start.py [CVS_DIRPATH] [OUTPUT_DIRPATH] [SEARCH_ROLES]
+```
+```code
+python .\start.py ".\data\raw" .\models\cv-with-labels\ 'da-de'
+```
+or in two steps
+### Extract Text
+```code
+python .\src\data\make_dataset.py .\data\raw\test-data .\data\interim\pool-test.json
+```
+### Predict
+```code
+python .\src\models\predict_model.py .\data\interim\pool-test.json .\models\cv-with-labels\
+```
+
 Project Organization
 ------------
 
