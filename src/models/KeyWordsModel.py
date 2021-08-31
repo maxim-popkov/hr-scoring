@@ -11,22 +11,23 @@ class KeyWordClassifier(BaseEstimator, ClusterMixin):
     def __init__(self, roles_dict=None, roles2vote_num=None):
         if roles_dict == None:
             roles = {
-                'da': ['Data Analyst','sql', 'pandas', 'numpy', 'scipy', 'excel',
-                        'statistics','Data Analyst','tableau','sas','power bi','powerbi'],
+                'da': ['Data Analyst','sql', 'pandas', 'numpy', 'scipy', 'excel', 'Matplotlib', 'Seaborn',
+                        'statistics','Data Analyst','tableau','sas','power bi','powerbi', 'ltv', 'cac', 'Retention'],
                 'de': ['data engineer', 'Kubernetes','asyncio', 'flask', 'django', 'api', 'linux', 'bash', 
                         'mongodb', 'SQLAlchemy','fastapi', 'kafka', 'etl', 'spark','python','data warehousing',
-                        'pig','hive','hadoop','hbase','elastic', 'jenkins', 'git', 'docker'],
+                        'pig','hive','hadoop','hbase','elastic', 'jenkins', 'git', 'docker', 'airflow', 'scala', 'java','lucene'],
                 'ds': ['Data Science', 'Random Forest', 'logistic regression' 'machine learning', 'scikit',
-                        'Computer Vision','data mining','matlab', 'cnn', 'rnn', 'statistics','linear algebra','scikit learn',
+                        'Computer Vision','data mining','matlab', 'cnn', 'rnn', 'statistics','linear algebra',
                         'keras','tensorflow','pytorch','torch','bert','theano', 'deep learning','image processing',
-                        'digital signal processing','opencv','uplift', 'lgd', 'catboost', 'xgboost'],
-                'vc_nlp': ['Computer Vision', 'OCR', 'tensorrt', 'OpenVINO', 'object detection', 'cnn', 'rnn', 'unet', 
+                        'digital signal processing','opencv','uplift', 'lgd', 'catboost', 'xgboost', 'scikit', 'LightGBM'],
+                'cv_nlp': ['Computer Vision', 'OCR', 'tensorrt', 'OpenVINO', 'object detection', 'cnn', 'rnn', 'unet', 
                             'u-net', 'vgg', 'resnet','pytorch','bert', 'nltk', 'gensim','image processing','opencv'],
-                'grade': ['senior', 'middle', 'старший', 'ведущий', 'доцент', 'руководитель', 'директор', 'team lead', 'tech lead']
+                'grade': ['senior', 'middle', 'старший', 'ведущий', 'доцент', 'руководитель', 'директор', 'team lead', 'tech lead'],
+                'courses': []
 
             }
             roles2vote_num = {
-                'da':1, 'de':2, 'ds':1, 'vc_nlp':2, 'grade':0
+                'da':1, 'de':3, 'ds':3, 'cv_nlp':2, 'grade':0
             }
 
         roles = { role: list(map(str.lower, words)) for (role, words) in roles.items() }
@@ -53,6 +54,7 @@ class KeyWordClassifier(BaseEstimator, ClusterMixin):
         results = np.zeros(shape=(n_rows,n_cols))
 
         for ix, text in enumerate(X):
+            text = text.lower()
             iter_result =  np.zeros(shape=(n_cols))
 
             if len(text) == 0:
