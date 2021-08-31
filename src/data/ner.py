@@ -1,6 +1,4 @@
 
-
-
 def courses_detector(text, courses_keywords=None):
     """
     detect if course in text
