@@ -95,7 +95,9 @@ def main(input_filepath, output_dirpath, search_roles):
         logger.info(f"File {'-'.join(file_roles) + '-' + os.path.basename(fpath)}")
  
         src_path = fpath
-        dst_path = os.path.join(OUTPUT_DIRPATH, '-'.join(file_roles) + '-' + os.path.basename(fpath))
+        dst_path = os.path.join(output_dirpath, '-'.join(file_roles) + '-' + os.path.basename(fpath))
+        # logger.info(f"SRC File {src_path}")
+        # logger.info(f"DST File {dst_path}")
         
         shutil.copy(src_path, dst_path)
         resume_write_counter += 1

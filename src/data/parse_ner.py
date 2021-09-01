@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+
 """
-DEPRECATED
+1. PARSE Data from pdf docx rtf
+2. PARSE NER from texts <---
+3. Predict
 """
 
 import os
@@ -27,8 +30,8 @@ from natasha import (
 import ner
 
 
-INPUT_DIRPATH =  r'D:\develop\hr-scoring\data\raw\test-data'
-OUTPUT_FILEPATH = r'D:\develop\hr-scoring\data\interim\pool-test.json'
+INPUT_FILEPATH =  r'D:\develop\hr-scoring\data\interim\parse-test.json'
+OUTPUT_FILEPATH = r'D:\develop\hr-scoring\data\interim\parse-with-ner-test.json'
 
 morph_vocab = MorphVocab()
 emb = NewsEmbedding()
@@ -83,45 +86,33 @@ def prepare_ner(text):
 
 # @profile
 @click.command()
-@click.argument('input_dirpath', default=INPUT_DIRPATH)
+@click.argument('input_filepath', default=INPUT_FILEPATH)
 @click.argument('output_filepath', type=click.Path(), default=OUTPUT_FILEPATH)
-def main(input_dirpath, output_filepath):
+def main(input_filepath, output_filepath):
     """ Runs data processing scripts to turn raw data from (../raw) into
         cleaned data ready to be analyzed (saved in ../processed).
     """
     logger = logging.getLogger(__name__)
     logger.info('Extract Text data set from raw data')
-    logger.info(f'Input DIR: {input_dirpath}')
+    logger.info(f'Input FILE: {input_filepath}')
     logger.info(f'Output FILE: "{output_filepath}')
 
+    data = None
+    with open(input_filepath, encoding='utf8') as fd:
+        data = json.load(fd, encoding='utf8')
 
-    fpaths = [y for x in os.walk(input_dirpath) for y in glob(os.path.join(x[0], '*.*'))]
-    logger.info(f'Find {len(fpaths)} files')
-
-    pdf_fpaths = [fpath for fpath in fpaths if fpath.endswith(".pdf")]
-    docx_fpaths = [fpath for fpath in fpaths if fpath.endswith(".docx")]
-    rtf_fpaths = [fpath for fpath in fpaths if fpath.endswith(".rtf")]
-
-    skip_paths = [fpath for fpath in fpaths if fpath not in set(pdf_fpaths + docx_fpaths + rtf_fpaths)]
-    logger.info(f'Find PDFs:{len(pdf_fpaths)} | DOCXs:{len(docx_fpaths)} | RTFs:{len(rtf_fpaths)} | SKIP: {len(skip_paths)}')
-
-    fpath_txts = [(fpath, pdf2text(fpath)) for fpath in pdf_fpaths]
-    fpath_txts = fpath_txts + [(fpath, docx2txt.process(fpath)) for fpath in docx_fpaths]
-    fpath_txts = fpath_txts + [(fpath, rtf2text(fpath)) for fpath in rtf_fpaths]
+    logger.info(f'Find {len(data)} CVs')
 
     processed_data = []
-
-    for fpath, txt in fpath_txts:
-        resume_info = make_resume_info_dict(fpath, txt)
-        resume_info['ner'] = prepare_ner(resume_info['text'])
-
-        processed_data.append(resume_info)
+    for cv_item in data:
+        if cv_item['skip'] == True:
+            processed_data.append(cv_item)
+            continue
+        
+        cv_item['ner'] = prepare_ner(cv_item['text'])
+        processed_data.append(cv_item)
 
     logger.info(f'Processed {len(processed_data)}')
-
-    for fpath in skip_paths:
-        resume_info = make_resume_info_dict(fpath, None)
-        processed_data.append(resume_info)
 
     with open(output_filepath, 'w',  encoding='utf8') as fd:
         json.dump(processed_data, fd, indent=4, ensure_ascii=False)

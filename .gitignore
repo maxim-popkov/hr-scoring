@@ -97,3 +97,6 @@ target/
 *.rtf
 *.doc
 *.docx
+
+# profiler
+*.lprof

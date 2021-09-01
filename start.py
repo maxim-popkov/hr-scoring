@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""
+ALL Steps in one file
+1. PARSE Data from pdf docx rtf
+2. PARSE NER from texts
+3. Predict
+"""
+
+
 import os
 import sys
 import click
@@ -29,16 +37,22 @@ def main(cvs_dirpath, output_dirpath, search_roles):
     logger = logging.getLogger(__name__)
 
     time_str = str(dt.datetime.now()).replace(' ','__').replace(':','-').split('.')[0]
-    fname = 'cvs-' + time_str + '.json'
+    fname_parse = 'cvs-parse-' + time_str + '.json'
+    fname_ner = 'cvs-ner-' + time_str + '.json'
 
-    interim_fpath = os.path.join(INTERIM_DIRPATH, fname)
-    cmd_extract = f"python .\src\data\make_dataset.py {cvs_dirpath} {interim_fpath}"
-    cmd_predict = f"python .\src\models\predict_model.py {interim_fpath} {output_dirpath} {search_roles}"
+    interim_parse_fpath = os.path.join(INTERIM_DIRPATH, fname_parse)
+    interim_ner_fpath = os.path.join(INTERIM_DIRPATH, fname_ner)
 
-    logger.info(f'CMD extract: {cmd_extract}')
+    cmd_parse = f"python .\src\data\parse_data.py {cvs_dirpath} {interim_parse_fpath}"
+    cmd_ner = f"python .\src\data\parse_ner.py {interim_parse_fpath} {interim_ner_fpath}"
+    cmd_predict = f"python .\src\models\predict_model.py {interim_ner_fpath} {output_dirpath} {search_roles}"
+
+    logger.info(f'CMD parse: {cmd_parse}')
+    logger.info(f'CMD ner: {cmd_ner}')
     logger.info(f'CMD predict: {cmd_predict}')
 
-    exit_code_extract = os.system(cmd_extract)
+    exit_code_extract = os.system(cmd_parse)
+    exit_code_extract = os.system(cmd_ner)
     exit_code_predict = os.system(cmd_predict)
 
 

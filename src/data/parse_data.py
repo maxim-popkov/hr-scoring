@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-DEPRECATED
+1. PARSE Data from pdf docx rtf <---
+2. PARSE NER from texts
+3. Predict
 """
 
 import os
@@ -10,32 +12,14 @@ import codecs
 
 import click
 import logging
-from pathlib import Path
 
 import pdftotext
 import docx2txt
 from striprtf.striprtf import rtf_to_text
 
-from natasha import (
-    MorphVocab,   
-    NewsEmbedding,
-    NewsNERTagger,
-    NamesExtractor,
-    DatesExtractor
-)
-
-import ner
-
 
 INPUT_DIRPATH =  r'D:\develop\hr-scoring\data\raw\test-data'
-OUTPUT_FILEPATH = r'D:\develop\hr-scoring\data\interim\pool-test.json'
-
-morph_vocab = MorphVocab()
-emb = NewsEmbedding()
-ner_tagger = NewsNERTagger(emb)
-
-names_extractor = NamesExtractor(morph_vocab)
-dates_extractor = DatesExtractor(morph_vocab)
+OUTPUT_FILEPATH = r'D:\develop\hr-scoring\data\interim\parsed-test.json'
 
 
 def pdf2text(pdf_path):
@@ -63,22 +47,6 @@ def make_resume_info_dict(fpath, text=None):
         'text': text if text != None else ''
     }
     return resume_info
-
-
-def prepare_ner(text):
-    blocks = ner.text_to_blocks(text)
-    block_info = []
-    for ix, block_text in enumerate(blocks):
-        entities = ner.extract_entities(block_text, dates_extractor, ner_tagger, names_extractor)
-        # print(f'-----{ix}-----')
-        # print(block_text)
-        # print(entities)
-
-        if len(entities) == 0:
-            continue
-        block_info.append(entities)
-
-    return block_info
 
 
 # @profile
@@ -113,8 +81,6 @@ def main(input_dirpath, output_filepath):
 
     for fpath, txt in fpath_txts:
         resume_info = make_resume_info_dict(fpath, txt)
-        resume_info['ner'] = prepare_ner(resume_info['text'])
-
         processed_data.append(resume_info)
 
     logger.info(f'Processed {len(processed_data)}')

@@ -11,14 +11,18 @@ start.py [CVS_DIRPATH] [OUTPUT_DIRPATH] [SEARCH_ROLES]
 ```code
 python .\start.py ".\data\raw" .\models\cv-with-labels\ 'da-de'
 ```
-or in two steps
+or in three steps
 ### Extract Text
 ```code
-python .\src\data\make_dataset.py .\data\raw\test-data .\data\interim\pool-test.json
+python .\src\data\parse_data.py .\data\raw\test-data .\data\interim\parse-test.json
+```
+### Extract Entities
+```code
+python .\src\data\parse_ner.py .\data\interim\parse-test.json .\data\interim\ner-test.json
 ```
 ### Predict
 ```code
-python .\src\models\predict_model.py .\data\interim\pool-test.json .\models\cv-with-labels\
+python .\src\models\predict_model.py .\data\interim\ner-test.json .\models\cv-with-labels\
 ```
 
 Project Organization

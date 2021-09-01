@@ -22,9 +22,7 @@ class KeyWordClassifier(BaseEstimator, ClusterMixin):
                         'digital signal processing','opencv','uplift', 'lgd', 'catboost', 'xgboost', 'scikit', 'LightGBM'],
                 'cv_nlp': ['Computer Vision', 'OCR', 'tensorrt', 'OpenVINO', 'object detection', 'cnn', 'rnn', 'unet', 
                             'u-net', 'vgg', 'resnet','pytorch','bert', 'nltk', 'gensim','image processing','opencv'],
-                'grade': ['senior', 'middle', 'старший', 'ведущий', 'доцент', 'руководитель', 'директор', 'team lead', 'tech lead'],
-                'courses': []
-
+                'grade': ['senior', 'middle', 'старший', 'ведущий', 'доцент', 'руководитель', 'директор', 'team lead', 'tech lead']
             }
             roles2vote_num = {
                 'da':1, 'de':3, 'ds':3, 'cv_nlp':2, 'grade':0
